@@ -1,0 +1,62 @@
+<script>
+    const renderContent = async() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const articleUUID = urlParams.get('article');
+        const getReq = await fetch("/backend/show-article.php?article="+articleUUID);
+        const get = await getReq.json();
+        if(get['status']==="success") {
+            console.log(get['array']);
+            document.getElementById("title-page").innerHTML = get['article_title']
+            document.getElementById("render-111").innerHTML = get['article_title']
+            const render = get['array']
+            .map(html => {
+                const content = htmlToMarkdown(html['content']);
+                if(html['type']==="single") {
+                    switch (html['tag']) {
+                        case "header":
+                            return panel.headerPanel(html['tag_uuid'], content);
+                        case "header-3":
+                            return panel.header3Panel(html['tag_uuid'], content);
+                        case "header-4":
+                            return panel.header4Panel(html['tag_uuid'], content);
+                        case "header-5":
+                            return panel.header5Panel(html['tag_uuid'], content);
+                        case "header-6":
+                            return panel.header6Panel(html['tag_uuid'], content);
+                        case "paragraph":
+                            return panel.paragraphPanel(html['tag_uuid'], content);
+                        case "blockquote":
+                            return panel.blockquotePanel(html['tag_uuid'], content);
+                        case "youtube":
+                            return panel.youtubePanel(html['tag_uuid'], content);
+                        case "table":
+                            return panel.tablePanel(html['tag_uuid'], JSON.parse(content));
+                        case "code-preview":
+                            return panel.codePreviewPanel(html['tag_uuid'], html['content']);
+                        case "image":
+                            return panel.imagePanel(html['tag_uuid'], content);
+                        default:
+                            break;
+                    }
+                } else if(html["type"]==="multiple") {
+                    switch (html['tag']) {
+                        case "ul":
+                            return panel.listPanel("ul", html['tag_uuid'], html['contents']);
+                        case "ol":
+                            return panel.listPanel("ol", html['tag_uuid'], html['contents']);
+                        case "image":
+                            return panel.imageListPanel(html['tag_uuid'], html['contents'])
+                        default:
+                            break;
+                    }
+
+                }
+                return ''; // Чтобы не добавлять `undefined` для тегов, которые не совпадают
+            })
+            .join("");
+            document.getElementById("render").innerHTML = render;
+            createBlock()
+        } 
+    };
+    renderContent();
+</script>

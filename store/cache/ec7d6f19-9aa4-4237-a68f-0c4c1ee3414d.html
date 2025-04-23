@@ -1,0 +1,138 @@
+
+
+<div data-bs-theme="dark" class="modal fade" id="okkiHeaderSectionModal" tabindex="-1" aria-labelledby="okkiHeaderSectionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content border-0 rounded-5 p-3 text-body">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <nav class="h-100 flex-column align-items-stretch w-100"><nav class="nav nav-pills flex-column"><a onclick="okkiHideModalHeaderSection()" class="nav-link rounded-4 p-0 m-0 mb-3 link-body-emphasis" href="#header_513e8774-f356-4f61-942b-42905d1717d8">Почему PWA так привлекательны?</a><a onclick="okkiHideModalHeaderSection()" class="nav-link rounded-4 p-0 m-0 mb-3 link-body-emphasis" href="#header_11c3e90e-497d-45af-912f-9544683a3df5">Сравнение PWA и нативных приложений</a></nav></nav>            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const okkiHideModalHeaderSection = () => {
+        const myModalEl = document.getElementById('okkiHeaderSectionModal');
+        const myModal = bootstrap.Modal.getInstance(myModalEl) || new bootstrap.Modal(myModalEl);
+        myModal.hide();
+    }
+</script>
+
+<div data-bs-theme="dark" class="modal fade" id="okkiPreviewImageModal" tabindex="-1" aria-labelledby="okkiPreviewImageModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-header border-0 d-flex justify-content-end">
+                <button type="button" class="btn btn-light rounded-circle py-2" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-body d-flex align-items-center justify-content-center">
+                <img id="okkiPreviewImageSrc" class="img-fluid rounded-5 bg-body-secondary" style="width:100%;" src="/source/image/600x400.svg" alt=""/>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+            <div class="col-md-3 order-md-1 d-md-block d-none position-relative">
+            <nav id="simple-list-example" class="h-100 flex-column align-items-stretch w-100 pe-2" style="font-size:1rem;"><nav class="nav nav-pills flex-column position-sticky border-end" style="top:130px;"><a class="nav-link rounded-4 link-body-emphasis opacity-75 " style="font-size:14px;" href="#header_513e8774-f356-4f61-942b-42905d1717d8">Почему PWA так привлекательны?</a><a class="nav-link rounded-4 link-body-emphasis opacity-75 ms-0 my-1" style="font-size:14px;" href="#header_11c3e90e-497d-45af-912f-9544683a3df5">Сравнение PWA и нативных приложений</a></nav></nav>                    </div>
+        <div class="col-md-9 order-md-2">
+            <div data-bs-spy="scroll" data-bs-target="#simple-list-example" data-bs-offset="130" data-bs-smooth-scroll="true" class="scrollspy-example" tabindex="0">
+                <div class="container-fluid py-5 d-flex flex-column gap-5" id="actionWithArticle"><div class="row gap-4"><div class="col-12"><h1 class="m-0 p-0">PWA – возможности, которые меняют правила игры!</h1></div><div class="col-12 my-3"><p class="text-secondary m-0 p-0"><i class="bi bi-calendar-week me-2"></i>13:14, 14.02.2025</p></div><div class="col-12"><p class="m-0 lh-lg"><div class="lh-lg"><span style="display: block; text-align: justify;">В последнее время прогрессивные веб-приложения (PWA) набирают обороты и буквально переворачивают представление о том, как мы используем мобильные и десктопные приложения.&nbsp;</span><div><br></div><div>Представьте с<b></b>ебе: одно приложение, работающее в браузере, но при этом предоставляющее почти все возможности нативных программ.&nbsp;</div><div><b><br></b></div><div><b>PWA позволяет запускать веб-сайты как самостоятельные приложения</b>, устанавливать их на домашний экран, работать офлайн и даже получать push-уведомления — все это без необходимости скачивать их из магазина приложений.</div></div></p></div><div class="col-12 mb-4">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="position-relative border-dark-subtle" style="max-width:700px;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;cursor: pointer;z-index:2;">
+                                <div id="preloader-423789c2-0060-473d-bb0b-791b443196a6" class="w-100 bg-body-secondary position-absolute rounded-5 d-flex align-items-center justify-content-center" style="height:auto;aspect-ratio:3/2;object-fit:cover;cursor: pointer;">
+                                    <i class="bi bi-image-fill display-1"></i>
+                                </div>
+                                <img onclick="okkiPreviewImage('/store/media/ec7d6f19-9aa4-4237-a68f-0c4c1ee3414d/img_67af000863a95.webp')" data-preloader="preloader-423789c2-0060-473d-bb0b-791b443196a6"  data-bs-toggle="modal" data-bs-target="#okkiPreviewImageModal" class="col-12 rounded-5 image-media bg-body-secondary border border-dark-subtle w-100" style="height:auto;aspect-ratio:3/2;object-fit:cover;cursor: pointer;" data-src="/store/media/ec7d6f19-9aa4-4237-a68f-0c4c1ee3414d/img_67af000863a95.webp"/>
+                            </div>
+                        </div>
+                    </div><div class="col-12"><h2 id="header_513e8774-f356-4f61-942b-42905d1717d8" class="border-bottom pb-4 fs-2"><div>Почему PWA так привлекательны?</div></h2></div><div class="col-12 mb-4">
+                        
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="position-relative border-dark-subtle" style="max-width:700px;width:100%;height:auto;aspect-ratio:3/2;">
+                                <div id="preloader-d72204ce-3fb0-4829-bd59-2029a1b9fc51" class="w-100 bg-body-secondary position-absolute rounded-5 d-flex align-items-center justify-content-center" style="height:auto;aspect-ratio:3/2;rounded-5">
+                                    <i class="bi bi-youtube display-1"></i>
+                                </div>
+                                <iframe loading="lazy" data-preloader="preloader-d72204ce-3fb0-4829-bd59-2029a1b9fc51" class="rounded-5 youtube-media bg-body-secondary w-100 h-auto" style="aspect-ratio:3/2;" data-src="https://www.youtube-nocookie.com/embed/VoLhQS-hKOU" title="YouTube video player" frameborder="0" allow="encrypted-media" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    </div><div class="col-12"><p class="m-0 lh-lg"><div class="lh-lg">Во-первых, это скорость и легкость обновлений. Вам не нужно ждать, пока магазин приложений одобрит обновление — разработчик обновляет сервер, и новые функции мгновенно доступны пользователю. Во-вторых, PWA работают на всех устройствах и платформах, что позволяет значительно сократить время и затраты на разработку. Одно и то же приложение может быть запущено как на Android, так и на iOS, Windows или даже на старых браузерах.</div></p></div><div class="col-12"><p class="m-0 lh-lg"><div class="lh-lg">Особенно интересно то, что многие приложения в Play Market и Microsoft Store уже являются PWA, работающими на движке браузера. Например, Microsoft Store использует движок Edge для запуска своих приложений, а в Play Market многие PWA запускаются через Chrome. Это позволяет обеспечить более высокую производительность и стабильность, а также быстрое обновление функционала без лишних затрат.</div></p></div><div class="col-12 mb-4">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="position-relative border-dark-subtle" style="max-width:700px;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;cursor: pointer;z-index:2;">
+                                <div id="preloader-8adcebff-7315-4eab-b37e-e483b091fb31" class="w-100 bg-body-secondary position-absolute rounded-5 d-flex align-items-center justify-content-center" style="height:auto;aspect-ratio:3/2;object-fit:cover;cursor: pointer;">
+                                    <i class="bi bi-image-fill display-1"></i>
+                                </div>
+                                <img onclick="okkiPreviewImage('/store/media/ec7d6f19-9aa4-4237-a68f-0c4c1ee3414d/img_67af012ec8627.webp')" data-preloader="preloader-8adcebff-7315-4eab-b37e-e483b091fb31"  data-bs-toggle="modal" data-bs-target="#okkiPreviewImageModal" class="col-12 rounded-5 image-media bg-body-secondary border border-dark-subtle w-100" style="height:auto;aspect-ratio:3/2;object-fit:cover;cursor: pointer;" data-src="/store/media/ec7d6f19-9aa4-4237-a68f-0c4c1ee3414d/img_67af012ec8627.webp"/>
+                            </div>
+                        </div>
+                    </div><div class="col-12"><p class="m-0 lh-lg"><div class="lh-lg">Кроме того, PWA занимают меньше места на устройстве и потребляют меньше ресурсов, поскольку работают через браузер. Это особенно важно для пользователей, которые не хотят утруждать свои гаджеты лишними приложениями. Push-уведомления и возможность работы офлайн делают PWA идеальными для тех, кто всегда в движении — вы можете быть на связи, даже если интернет-соединение нестабильно.</div></p></div><div class="col-12"><h3 id="header_11c3e90e-497d-45af-912f-9544683a3df5" class="fs-3"><div>Сравнение PWA и нативных приложений</div></h3></div><div class="col-12"><div class="tab-content table-responsive"><table class="table table-bordered"><thead><tr><th>Преимущество</th><th>PWA</th><th>Нативное приложение</th></tr></thead><tbody><tr><td>Обновление</td><td>Автоматическое, мгновенное обновление через сервер</td><td>Обновления через магазин (App Store, Play Market)</td></tr><tr><td>Кроссплатформенность</td><td>Один код для всех устройств</td><td>Требуется отдельная разработка для каждой платформы</td></tr><tr><td>Размер и ресурсоёмкость</td><td>Легковесные, занимают меньше места</td><td>Часто больше по размеру и требуют больше ресурсов</td></tr><tr><td>Установка</td><td>Устанавливаются прямо из браузера (без посредников)</td><td>Установка через специальные магазины приложений</td></tr><tr><td>Разработка и поддержка</td><td>Быстрый цикл разработки, меньшие затраты</td><td>Более длительный цикл разработки и сложная поддержка</td></tr><tr><td>Работа офлайн</td><td>Возможна через кеширование и сервис-воркеры</td><td>Зависит от реализации, обычно требует постоянного подключения</td></tr></tbody></table></div></div><div class="col-12 mb-4">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="position-relative border-dark-subtle" style="max-width:700px;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;cursor: pointer;z-index:2;">
+                                <div id="preloader-e0c43acc-6470-414c-b20c-adf87ffea5a0" class="w-100 bg-body-secondary position-absolute rounded-5 d-flex align-items-center justify-content-center" style="height:auto;aspect-ratio:3/2;object-fit:cover;cursor: pointer;">
+                                    <i class="bi bi-image-fill display-1"></i>
+                                </div>
+                                <img onclick="okkiPreviewImage('/store/media/ec7d6f19-9aa4-4237-a68f-0c4c1ee3414d/img_67af0012468b6.webp')" data-preloader="preloader-e0c43acc-6470-414c-b20c-adf87ffea5a0"  data-bs-toggle="modal" data-bs-target="#okkiPreviewImageModal" class="col-12 rounded-5 image-media bg-body-secondary border border-dark-subtle w-100" style="height:auto;aspect-ratio:3/2;object-fit:cover;cursor: pointer;" data-src="/store/media/ec7d6f19-9aa4-4237-a68f-0c4c1ee3414d/img_67af0012468b6.webp"/>
+                            </div>
+                        </div>
+                    </div><div class="col-12"><p class="m-0 lh-lg"><div class="lh-lg">Таким образом, PWA — это не просто модное слово, а настоящий прорыв, который уже сегодня дает возможность малому бизнесу, стартапам и крупным компаниям создавать современные, удобные и быстрые приложения без лишних затрат. Если вы еще не пробовали PWA, возможно, пришло время задуматься: не пора ли перевернуть свой бизнес и воспользоваться этими потрясающими возможностями?</div></p></div><div class="col-12">
+                        <div class="bg-body-secondary border rounded-4 p-3 mx-auto" style="max-width:800px;width:100%;">
+                            <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-2">
+                                <h6 class="m-0 p-0 text-body">Code</h6>
+                                <button onclick="okkiCopyCode('code_58dc57c6-d2db-4cb8-98f9-210d0230922b')" class="btn btn-secondary rounded-4" style="font-size:13px;"><i class="bi bi-copy me-2"></i>Copy</button>
+                            </div>
+                            <span class="font-monospace m-0 p-0" style="font-size:14px;" id="code_58dc57c6-d2db-4cb8-98f9-210d0230922b"><pre class="m-0 p-0">if (element.hasAttribute(&quot;target&quot;)) {<br />
+  element.setAttribute(&quot;target&quot;, &quot;_self&quot;);<br />
+}</pre></span>
+                        </div>
+                    </div></div></div>            </div>
+        </div>
+    </div>
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast bg-dark text-white" role="alert" aria-live="assertive" aria-atomic="true"
+        style="max-width:200px;">
+        <div class="toast-body text-center">
+            Скопировано
+        </div>
+    </div>
+</div>
+<script>
+    const okkiCopyCode = (query) => {
+        const copyText = document.getElementById(query);
+        if (!copyText) return console.error('Element not found');
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(copyText);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById("liveToast"))
+        try {
+            navigator.clipboard.writeText(copyText.textContent || copyText.innerText);
+            toastBootstrap.show()
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+        } finally {
+            selection.removeAllRanges();
+        }
+    };
+    const okkiPreviewImage = (src) => document.getElementById("okkiPreviewImageSrc").src=src;
+</script>
+<script>
+    window.addEventListener("load",() => {
+        const list = [".youtube-media",".image-media"];
+        list.map(render=>{
+            document.querySelectorAll(render).forEach(block=>{
+                if (block && block.dataset.src) {
+                    block.src = block.dataset.src;
+                    delete block.dataset.src;
+                }
+                block.addEventListener("load",()=>{
+                    const idPreloader = block.dataset.preloader;
+                    const htmlBlock = document.getElementById(idPreloader);
+                    htmlBlock && htmlBlock.classList.toggle("d-none");
+                });
+            });
+        });
+    });
+</script>

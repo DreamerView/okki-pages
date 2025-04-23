@@ -1,0 +1,322 @@
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryParam = urlParams.get('article');
+    if (queryParam === null || queryParam === "") window.location.href = "/";
+</script>
+<script>
+    const autoResizeTextareas = () => {
+        const textareas = document.querySelectorAll('textarea');
+        textareas.forEach((textarea) => {
+            const adjustHeight = () => {
+                textarea.style.height = 'auto'; // Сброс высоты
+                textarea.style.height = `${textarea.scrollHeight}px`; // Установка новой высоты
+            };
+            // Событие на ввод текста
+            textarea.addEventListener('input', adjustHeight);
+            // Наблюдение за программными изменениями текста
+            const observer = new MutationObserver(() => adjustHeight());
+            observer.observe(textarea, {
+                childList: true,
+                characterData: true,
+                subtree: true
+            });
+            // Подстройка высоты при инициализации
+            adjustHeight();
+        });
+        // 
+    };
+    let lastTime = 0;
+    const frameInterval = 60;
+    let draggedElement = null;
+    const dragAndDropArea = (flag = 0) => {
+        document.querySelectorAll("[draggable]").forEach(drag => {
+            drag.draggable = false;
+        });
+        const render = document.getElementById("render");
+        if (!render) return;
+        
+        // Удаляем предыдущие обработчики, если они уже были добавлены
+        render.replaceWith(render.cloneNode(true));
+        
+        if (flag === 0) return; // Если flag = 0, функция завершает работу
+
+        console.log('Drag and drop enabled');
+        const newRender = document.getElementById("render");
+        let lastMouseY = 0;
+        let draggedElement = null;
+        let lastTime = 0;
+        const frameInterval = 50;
+
+        newRender.addEventListener("dragstart", (e) => {
+            const row = e.target.closest(".row");
+            if (row && row.hasAttribute("draggable")) {
+                draggedElement = row;
+                e.dataTransfer.effectAllowed = "move";
+                row.style.opacity = "0.5";
+                row.classList.add("dragging");
+            } else {
+                e.preventDefault(); // Блокируем начало перетаскивания, если draggable не установлено
+            }
+        });
+
+
+        newRender.addEventListener("dragover", (e) => {
+            console.log("moved");
+            e.preventDefault();
+            const mouseY = e.clientY;
+            const isMovingDown = mouseY > lastMouseY;
+            lastMouseY = mouseY;
+            const currentElement = document.elementFromPoint(e.clientX, e.clientY)?.closest(".row");
+            const currentTime = performance.now();
+
+            if (currentTime - lastTime >= frameInterval) {
+                lastTime = currentTime;
+                if (currentElement && currentElement !== draggedElement) {
+                    if (isMovingDown) {
+                        newRender.insertBefore(draggedElement, currentElement.nextElementSibling);
+                    } else {
+                        newRender.insertBefore(draggedElement, currentElement);
+                    }
+                }
+            }
+        });
+
+        newRender.addEventListener("dragend", () => {
+            if (draggedElement) {
+                draggedElement.style.opacity = "1";
+                draggedElement.classList.remove("dragging");
+                draggedElement = null;
+            }
+        });
+
+        newRender.addEventListener("mousedown", (e) => {
+            if (e.target.closest(".move-btn") && !e.target.closest(".d-none")) {
+                const row = e.target.closest(".row");
+                row.setAttribute("draggable", true);
+                console.log("draggable set to true");
+            }
+        });
+
+        newRender.addEventListener("mouseup", (e) => {
+            console.log("mouseup");
+            if (e.target.closest(".move-btn") && !e.target.closest(".d-none")) {
+                const row = e.target.closest(".row");
+                row.removeAttribute("draggable");
+            }
+            document.querySelectorAll(".row").forEach(row => {
+                row.style.height = "auto";
+            });
+        });
+    };
+
+    autoResizeTextareas();
+    window.addEventListener('resize', (event) => {
+        autoResizeTextareas();
+    }, true);
+</script>
+<script>
+    let mode = ["default", "default"];
+    const modeBlock = (arg1, arg2) => {
+        mode = [arg1, arg2];
+    }
+    const deleteBlock = (uuid) => {
+        let isDelete = confirm("Do you confirm to delete the block?");
+        if(!isDelete) return;
+        const block = document.getElementById(uuid);
+        return block.remove();
+    };
+    const truncateText = (text) => text.length > 64 ? text.slice(0, 64) + "..." : text;
+    const getValueFromTextareaToMoveElement = () => {
+        document.querySelectorAll("[data-tag=header]").forEach(element => {
+            const uuid = element.getAttribute("data-tag-uuid");
+            document.getElementById("placeholder-" + uuid).innerText = truncateText(element.innerText);
+        });
+        document.querySelectorAll("[data-tag=paragraph]").forEach(element => {
+            const uuid = element.getAttribute("data-tag-uuid");
+            document.getElementById("placeholder-" + uuid).innerText = truncateText(element.innerText);
+        });
+        document.querySelectorAll("[data-tag=html]").forEach(element => {
+            const uuid = element.getAttribute("data-tag-uuid");
+            document.getElementById("placeholder-" + uuid).innerText = truncateText(element.innerText);
+        });
+        document.querySelectorAll("[data-tag=code-preview]").forEach(element => {
+            const uuid = element.getAttribute("data-tag-uuid");
+            document.getElementById("placeholder-" + uuid).innerText = truncateText(element.innerText);
+        });
+    }
+    let moveFlag = 0;
+    const moveMode = () => {
+        getValueFromTextareaToMoveElement();
+        document.querySelectorAll(".more-btn").forEach(more => {
+            more.classList.toggle("d-none");
+        });
+        document.querySelectorAll(".move-btn").forEach(more => {
+            more.classList.toggle("d-none");
+        });
+        document.querySelectorAll(".move-block-hidden").forEach(move => {
+            move.classList.toggle("d-none");
+        })
+        document.querySelectorAll(".move-block-show").forEach(move => {
+            move.classList.toggle("d-none");
+        })
+        document.getElementById("modeBlock").classList.toggle("d-none");
+        document.getElementById("stopMoveBlock").classList.toggle("d-none");
+        document.getElementById("moreButton").classList.toggle("d-none");
+        document.getElementById("addBlockOnBottom").classList.toggle("d-none");
+        // Сразу вызываем dragAndDropArea()
+        if(moveFlag === 0) {
+            moveFlag = 1;
+            dragAndDropArea(1);
+        } else {
+            moveFlag = 0;
+            dragAndDropArea(0);
+        }
+    };
+
+    const inputTextArea = (event) => {
+        const uuid = event.target.getAttribute("data-component-uuid");
+        const value = event.target.innerHTML;
+        if(document.getElementById("render-"+uuid)) {
+            document.getElementById("render-"+uuid).innerHTML = markdownToHtml(value);
+        }
+    }
+    const addList = (tag, render) => {
+        const html = document.getElementById(tag + "-" + render);
+        const uuidList = crypto.randomUUID();
+        html.insertAdjacentHTML("beforeend", `
+            <li class="ms-4 my-3" id="${tag}-list-${uuidList}">
+                <div class="row">
+                    <div class="col-11">
+                        <div contenteditable data-build data-type="multiple" data-tag="${tag}" data-tag-uuid="${render}" data-component-uuid="${uuidList}" rows="1" data-placeholder="Enter new header" name="paragraph" class="form-control border-0" style="resize:none;"></div>
+                    </div>
+                    <div class="col-1">
+                        <button onclick="deleteBlock('${tag}-list-${uuidList}')" class="btn bg-body-secondary"><i class="bi bi-trash2"></i></button>
+                    </div>
+                </div>
+            </li>
+        `);
+        dragAndDropArea();
+        autoResizeTextareas();
+    };
+    const uploadImage = (event, render) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > 700) { // Если изображение шире 700px, уменьшаем
+                        const maxWidth = 700;
+                        const scale = maxWidth / width;
+                        width = maxWidth;
+                        height *= scale;
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Конвертируем в WebP и получаем Blob
+                    canvas.toBlob((blob) => {
+                        const formData = new FormData();
+                        formData.append('image', blob, 'upload.webp');
+
+                        // Отправляем на сервер
+                        fetch('/backend/uploadToTrash.php', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById("image_" + render).src = data.filepath;
+                                document.getElementById("hidden_image_url_" + render).value = data.filepath;
+                                console.log("Файл загружен:", data.filepath);
+                                console.log("render" ,render)
+                            } else {
+                                console.error("Ошибка загрузки:", data.error);
+                            }
+                        })
+                        .catch(error => console.error("Ошибка запроса:", error));
+                    }, 'image/webp', 1);
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const createBlock = (attr, attr_value = "") => {
+        const modalInstance = bootstrap.Modal.getInstance(document.getElementById('moreInstrumentModal'));
+        modalInstance && modalInstance.hide();
+        const render = document.getElementById("render");
+        const uuid = crypto.randomUUID();
+        const uuidList = crypto.randomUUID();
+        const multiple = [{
+            component_uuid: crypto.randomUUID(),
+            content: ""
+        }];
+        const table = JSON.parse(`[{"${uuidList}":""}]`);
+        let specialFlag = false;
+        let html = "";
+        switch (attr) {
+            case "header":
+                html = panel.headerPanel(uuid);
+                break;
+            case "header-3":
+                html = panel.header3Panel(uuid);
+                break;
+            case "header-4":
+                html = panel.header4Panel(uuid);
+                break;
+            case "header-5":
+                html = panel.header5Panel(uuid);
+                break;
+            case "header-6":
+                html = panel.header6Panel(uuid);
+                break;
+            case "paragraph":
+                html = panel.paragraphPanel(uuid);
+                break;
+            case "blockquote":
+                html = panel.blockquotePanel(uuid);
+                break;
+            case "table":
+                html = panel.tablePanel(uuid,table);
+                break;
+            case "image":
+                html = panel.imagePanel(uuid);
+                break;
+            case "code-preview":
+                html = panel.codePreviewPanel(uuid);
+                break;
+            case "youtube":
+                html = panel.youtubePanel(uuid);
+                break;
+            case "ul-list":
+                html = panel.listPanel("ul", uuid, multiple);
+                break;
+            case "ol-list":
+                html = panel.listPanel("ol", uuid, multiple);
+                break;
+            case "images":
+                html = panel.imageListPanel(uuid, []);
+                break;
+        }
+
+        if (mode[1] === "up") {
+            document.getElementById(mode[0]).insertAdjacentHTML("beforebegin", html);
+        } else if (mode[1] === "down") {
+            document.getElementById(mode[0]).insertAdjacentHTML("afterend", html);
+        } else {
+            render.insertAdjacentHTML("beforeend", html);
+        }
+        dragAndDropArea();
+        return autoResizeTextareas();
+    }
+</script>

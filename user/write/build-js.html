@@ -1,0 +1,140 @@
+<script>
+
+    function normalizeHTML(html) {
+        // // Создаем временный элемент
+        // let tempDiv = document.createElement("div");
+        // tempDiv.innerHTML = html;
+
+        // // Удаляем ненужные стили и span'ы, оставляя текст внутри
+        // // tempDiv.querySelectorAll("span").forEach(el => {
+        // //     el.replaceWith(...el.childNodes);
+        // // });
+
+        // // Заменяем <div> на <br> или \n
+        // tempDiv.querySelectorAll("div").forEach(el => {
+        //     el.replaceWith(document.createElement("br"));
+        // });
+
+        // // Удаляем пустые теги (только если они не <br>)
+        // tempDiv.querySelectorAll("*").forEach(el => {
+        //     if (!el.innerHTML.trim() && el.tagName !== "BR") {
+        //         el.remove();
+        //     }
+        // });
+
+        // // Убираем лишние пробелы и нормализуем текст
+        // return tempDiv.innerHTML
+        //     .replace(/\s+/g, " ") // Убираем лишние пробелы
+        //     .replace(/<br\s*\/?>/g, "\n") // Заменяем <br> на \n
+        //     .trim();
+        return html;
+    }
+    const startPreloader = (preloader,modal=null) => {
+        document.getElementById("startLoading").classList.add("d-none");
+        document.getElementById("successLoading").classList.add("d-none");    
+        document.getElementById("errorLoading").classList.add("d-none");
+        
+        if(preloader==="start") {
+            document.getElementById("startLoading").classList.remove("d-none");
+        } else if(preloader==="success") {
+            document.getElementById("successLoading").classList.remove("d-none");
+            setTimeout(()=>{
+                modal.hide();
+            },1500);
+        } else if(preloader==="error") {
+            document.getElementById("errorLoading").classList.remove("d-none");
+            setTimeout(()=>{
+                modal.hide();
+            },1500);
+        } 
+    }
+    const buildArticle = async() => {
+        const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'))
+        loadingModal.show();
+        startPreloader("start");
+        const titleArticle = document.getElementById("title-page").value;
+        const urlParams = new URLSearchParams(window.location.search);
+        const articleUUID = urlParams.get('article');
+        if(articleUUID===null || articleUUID === "") window.location.href="/";
+        const formData = new FormData();
+        formData.append("title",titleArticle);
+        formData.append("article",articleUUID);
+
+        const changeTheme = await fetch("/backend/change-title.php", {
+            method: "POST",
+            body: formData
+        });
+        const res = await changeTheme.json();
+
+        if(res['status']==="error") {
+            startPreloader("error",loadingModal);
+            return;
+        }
+
+        let schemeArray = [];
+
+        function processTags() {
+            // Создаем Set для уникальных tag_uuid, локально для каждой обработки
+            let uniqueTagUUIDs = new Set();
+
+            document.querySelectorAll("[data-build]").forEach(data => {
+                const tag = data.getAttribute("data-tag");
+                const tag_uuid = data.getAttribute("data-tag-uuid");
+                const type = data.getAttribute("data-type");
+                const value = data.hasAttribute("contenteditable")?markdownToHtml(data.innerHTML):data.value;
+
+                // Проверяем, был ли уже добавлен данный tag_uuid
+                if (!uniqueTagUUIDs.has(tag_uuid)) {
+                    uniqueTagUUIDs.add(tag_uuid);  // Добавляем в Set
+                    value !=="" && schemeArray.push({uuid: articleUUID, tag: tag, tag_uuid: tag_uuid, type: type});
+                }
+            });
+
+        }
+
+        // Вызывайте функцию по нужному событию, например:
+        processTags();
+
+        console.log(schemeArray);
+
+        let contentArray = [];
+
+        document.querySelectorAll("[data-build]").forEach(data=>{
+            const tag = data.getAttribute("data-tag");
+            const tag_uuid = data.getAttribute("data-tag-uuid");
+            const component_uuid = data.getAttribute("data-component-uuid");
+            const type = data.getAttribute("data-type");
+            let value = data.hasAttribute("contenteditable")?markdownToHtml(data.innerHTML):data.value;
+            if(tag==="table") {
+                const table = tableToJson(data);
+                value = JSON.stringify(table);
+            }
+            value !== "" && contentArray.push({scheme_uuid:articleUUID, tag:tag, tag_uuid:tag_uuid, component_uuid:component_uuid, content:value});
+        })
+
+        console.log(contentArray);
+
+        const data = {
+            uuid:articleUUID,
+            scheme:schemeArray,
+            content:contentArray
+        };
+
+        const post = await fetch("/backend/build-article.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)  // Преобразуем объект в строку JSON
+        });
+        const postRes = await post.json();
+        startPreloader("success",loadingModal);
+
+    }
+    document.addEventListener("keydown", (event) => {
+        if (event.ctrlKey && event.code === "KeyS") {
+            event.preventDefault(); // Отключаем стандартное сохранение страницы
+            buildArticle();
+        }
+});
+</script>

@@ -1,0 +1,143 @@
+<div data-bs-theme="dark" class="modal fade" id="userFollowListModal" tabindex="-1" aria-labelledby="userFollowListModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md px-sm-4 px-0">
+        <div class="modal-content border-0 rounded-5 p-3 text-white">
+            <div class="modal-header border-0">
+                <h1 class="modal-title fs-3" id="userFollowListModalLabel">List</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-footer border-0">
+                <input type="search" class="form-control bg-body-secondary rounded-4" placeholder="Search"/>
+            </div>
+            <div class="modal-body" id="renderFollowList">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const render = document.getElementById("renderFollowList");
+    let offsetFollowList = 0;
+    const limit = 7;
+    let loading = false;
+    let hasMore = true;
+
+    const preloaderFollowList = `
+        <div id="followListpreloaderFollowList" class="d-flex justify-content-center mt-3">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `;
+
+    const viewCountOfFollowSystem = async (uuid, type) => {
+        try {
+            if (!uuid || !type) return;
+
+            offsetFollowList = 0;
+            hasMore = true;
+            loading = false;
+
+            document.getElementById("userFollowListModalLabel").innerText = type === "author" ? "Followers" : "Following";
+
+            render.setAttribute("data-uuid", uuid);
+            render.setAttribute("data-type", type);
+            render.innerHTML = preloaderFollowList; // Показываем прелоадер перед загрузкой
+
+            await loadMoreFollowList();
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    render.addEventListener("scroll", async () => {
+        if (loading || !hasMore) return;
+
+        if (render.scrollTop + render.clientHeight >= render.scrollHeight - 100) {
+            await loadMoreFollowList();
+        }
+    });
+
+    function truncateString(str, maxLength = 14) {
+        return str.length > maxLength ? str.slice(0, maxLength) + ' ...' : str;
+    }
+
+    const loadMoreFollowList = async () => {
+        loading = true;
+        document.getElementById("followListpreloaderFollowList")?.remove(); // Удаляем старый прелоадер
+        render.insertAdjacentHTML("beforeend", preloaderFollowList); // Добавляем прелоадер перед загрузкой
+
+        const uuid = render.getAttribute("data-uuid");
+        const type = render.getAttribute("data-type");
+
+        const res = await fetch(`/backend/follow-system/follow-list.php?uuid=${uuid}&type=${type}&offsetFollowList=${offsetFollowList}`);
+        const data = await res.json();
+
+        document.getElementById("followListpreloaderFollowList")?.remove(); // Удаляем прелоадер после загрузки
+
+        if (data.status !== "success" || data.list.length === 0) {
+            hasMore = false;
+            return;
+        }
+
+        offsetFollowList += limit;
+        const newHtml = data.list.map(list => `
+            <div class="row align-items-center mb-4">
+                <div class="col-2">
+                    <div class="w-100 h-auto rounded-circle bg-body-secondary" style="aspect-ratio: 1/1;">
+                        <img src="${list.image}" class="w-100 h-auto" style="aspect-ratio:1/1; object-fit:cover;"  />
+                    </div>
+                </div>
+                <a href="/@${list.login}" class="link-body-emphasis text-decoration-none col-6">
+                    <h6 title="${list.fullname}">${truncateString(list.fullname)}</h6>
+                    <p title="@${list.login}" class="p-0 m-0 text-secondary" style="font-size:13px;">@${truncateString(list.login)}</p>
+                </a>
+                <div class="col-4 d-flex justify-content-end">
+                    ${list.uuid === data.uuid ? `` : `
+                        <div id="loadingButton-${list.uuid}" class="spinner-border d-none" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <button id="followButton-${list.uuid}" onclick="toggleFollowOnModal('${list.uuid}', 'follow')" class="btn btn-primary rounded-4 ${list.is_following === 1 ? "d-none" : ""}">Follow</button>
+                        <button id="unFollowButton-${list.uuid}" onclick="toggleFollowOnModal('${list.uuid}', 'unfollow')" class="btn btn-secondary rounded-4 ${list.is_following === 1 ? "" : "d-none"}">Following</button>
+                    `}
+                </div>
+            </div>
+        `).join("");
+
+        render.insertAdjacentHTML("beforeend", newHtml);
+        loading = false;
+    };
+
+
+
+    const toggleFollowOnModal = async(author, action) => {
+        const loadingBtn = document.getElementById("loadingButton-"+author);
+        try {
+            const followBtn = document.getElementById("followButton-"+author);
+            const unfollowBtn = document.getElementById("unFollowButton-"+author);
+            if (!followBtn || !unfollowBtn) return;
+            const button = action === "follow" ? followBtn : unfollowBtn;
+            const buttonReverse = action !== "follow" ? followBtn : unfollowBtn;
+            loadingBtn.classList.toggle("d-none");
+            button.classList.toggle("d-none");
+            await new Promise(resolve => setTimeout(resolve, 500));
+            const body = action === "follow" ? { uuid: self.crypto.randomUUID(), author } : { author };
+            const req = await fetch(`backend/follow-system/${action}-to-author.php`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            });
+            if (!req.ok) throw new Error(`Ошибка запроса: ${req.status} ${req.statusText}`);
+            const res = await req.json();
+            console.log(res);
+            if (res.status === "success") {
+                buttonReverse.classList.toggle("d-none");
+                countStatistics();
+            }
+
+        } catch(error) {
+            console.log(error);
+        } finally {
+            loadingBtn.classList.toggle("d-none");
+        }
+        
+    }
+</script>

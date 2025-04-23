@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# Внутреннее преобразование /article/UUID в /article?article=UUID
+RewriteRule ^a/@([a-zA-Z0-9\-]+)$ /article/index.php?article=$1 [L]
+RewriteRule ^@([a-zA-Z0-9\-]+)$ /user/index.php?login=$1 [L]
+
+# 404 error
+ErrorDocument 404 /server/error-404.php

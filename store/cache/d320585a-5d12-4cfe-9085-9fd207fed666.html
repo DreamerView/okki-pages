@@ -1,0 +1,45 @@
+
+<div class="modal fade" id="okkiPreviewImageModal" tabindex="-1" aria-labelledby="okkiPreviewImageModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex align-items-center justify-content-center">
+                <img id="okkiPreviewImageSrc" class="img-fluid rounded-4" src="/source/image/600x400.svg" alt=""/>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container py-5 d-flex flex-column gap-5" id="actionWithArticle"><div class="row gap-4"><div class="col-12"><h1>JavaScript: малоизвестные, но полезные API 💻</h1></div><div class="col-12"><p class="m-0"><div class="lh-lg">One mission - Four Editions</div></p></div><div class="col-12"><div class="d-flex align-items-center justify-content-center"><img onclick="okkiPreviewImage('/source/image/600x400.svg')" data-bs-toggle="modal" data-bs-target="#okkiPreviewImageModal" class="col-12 rounded-5" style="width:auto;max-width:80vw;cursor: pointer;" src="/source/image/600x400.svg"/></div></div><div class="col-12"><p class="m-0"><div class="lh-lg">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</div></p></div><div class="col-12"><p class="m-0"><div class="lh-lg">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</div></p></div></div></div><div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast bg-dark text-white" role="alert" aria-live="assertive" aria-atomic="true"
+        style="max-width:200px;">
+        <div class="toast-body text-center">
+            Скопировано
+        </div>
+    </div>
+</div>
+<script>
+    const okkiCopyCode = (query) => {
+        const copyText = document.getElementById(query);
+        if (copyText) {
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(copyText); // Выделяем содержимое <span>
+            selection.removeAllRanges();
+            selection.addRange(range);
+            const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById("liveToast"))
+            try {
+                navigator.clipboard.writeText(copyText.textContent || copyText.innerText); // Копируем текст
+                toastBootstrap.show()
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+            }
+            selection.removeAllRanges(); // Снимаем выделение
+        } else {
+            console.error('Element not found');
+        }
+    };
+    const okkiPreviewImage = (src) => document.getElementById("okkiPreviewImageSrc").src=src;
+</script>

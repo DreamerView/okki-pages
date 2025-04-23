@@ -1,0 +1,45 @@
+
+<div class="modal fade" id="okkiPreviewImageModal" tabindex="-1" aria-labelledby="okkiPreviewImageModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex align-items-center justify-content-center">
+                <img id="okkiPreviewImageSrc" class="img-fluid rounded-4" src="/source/image/600x400.svg" alt=""/>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container py-5 d-flex flex-column gap-5" id="actionWithArticle"><div class="row gap-4"><div class="col-12"><h1>List of modern LLM websites</h1></div><div class="col-12"><ol class="d-flex flex-column gap-4"><li class="mx-lg-4 ms-2"><font color="#0c58bb"><strike>Deepsike</strike></font></li><li class="mx-lg-4 ms-2">ChatGpt</li><li class="mx-lg-4 ms-2">Copilot Edge</li><li class="mx-lg-4 ms-2"><div style="text-align: left;"><span style="background-color: var(--bs-body-bg); color: var(--bs-body-color); font-size: 1rem; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);">Grok AI</span></div></li></ol></div><div class="col-12"><p class="m-0"><div class="lh-lg"></div></p></div><div class="col-12"><div class="bg-body-secondary rounded-4 p-4 mx-auto" style="max-width:800px;width:100%;"><div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-2"><h6 class="m-0 p-0">Code</h6><button onclick="okkiCopyCode('code_9e71a951-62b6-4856-af29-1c78935703e9')" class="btn btn-secondary rounded-4" style="font-size:13px;"><i class="bi bi-copy me-2"></i>Copy</button></div><span class="font-monospace" style="font-size:13px;" id="code_9e71a951-62b6-4856-af29-1c78935703e9"><pre></pre></span></div></div></div></div><div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast bg-dark text-white" role="alert" aria-live="assertive" aria-atomic="true"
+        style="max-width:200px;">
+        <div class="toast-body text-center">
+            Скопировано
+        </div>
+    </div>
+</div>
+<script>
+    const okkiCopyCode = (query) => {
+        const copyText = document.getElementById(query);
+        if (copyText) {
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(copyText); // Выделяем содержимое <span>
+            selection.removeAllRanges();
+            selection.addRange(range);
+            const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById("liveToast"))
+            try {
+                navigator.clipboard.writeText(copyText.textContent || copyText.innerText); // Копируем текст
+                toastBootstrap.show()
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+            }
+            selection.removeAllRanges(); // Снимаем выделение
+        } else {
+            console.error('Element not found');
+        }
+    };
+    const okkiPreviewImage = (src) => document.getElementById("okkiPreviewImageSrc").src=src;
+</script>

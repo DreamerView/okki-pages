@@ -1,0 +1,30 @@
+<script>
+    const markdownToHtml = (markdown) => {
+        // Обработка ссылок и изображений
+        markdown = markdown.replace(/\!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1">'); // Изображения
+        markdown = markdown.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>'); // Ссылки
+        // Обработка таблиц
+        markdown = markdown.replace(/^\|(.+\|)+$/gm, (match) => {
+            const rows = match.split('\n').map(row => row.split('|').map(cell => `<td>${cell.trim()}</td>`).join(''));
+            return `<tr>${rows.join('</tr><tr>')}</tr>`;
+        });
+        markdown = markdown.replace(/(<tr>.*<\/tr>)/gms, '<table class="table table-bordered">$1</table>');
+        // Горизонтальная линия
+        markdown = markdown.replace(/---/g, '<hr>');
+        return markdown;
+    };
+    const htmlToMarkdown = (html) => {
+        // Ссылки и изображения
+        console.log(html);
+        if(html===undefined) return;
+        html = html.replace(/<a href="(.*?)">(.*?)<\/a>/g, '[$2]($1)');
+        html = html.replace(/<img src="(.*?)" alt="(.*?)">/g, '![$2]($1)');
+        // Таблицы
+        html = html.replace(/<tr><td>(.*?)<\/td><td>(.*?)<\/td><\/tr>/g, '| $1 | $2 |');
+        html = html.replace(/(<tr>.*<\/tr>)/gms, '| $1 |');
+        // Горизонтальная линия
+        html = html.replace(/<hr>/g, '---');
+        
+        return html.trim();
+    };
+</script>

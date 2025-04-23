@@ -1,0 +1,46 @@
+
+
+<div class="container py-5"><div class="row"><div class="col-12"><h1>What is Lorem Ipsum?</h1></div><div class="col-12 mt-4"><ul class="d-flex flex-column gap-4"><li class="mx-lg-4 ms-2">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.</li><li class="mx-lg-4 ms-2">If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. </li><li class="mx-lg-4 ms-2">All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.</li></ul></div><div class="col-12 mt-4"><p class="lh-lg"></p></div><div class="col-12 mt-4"><p class="lh-lg"></p></div><div class="col-12 mt-4"><h2>*123*</h2></div><div class="col-12 mt-4"><p class="lh-lg"></p></div><div class="col-12 mt-4"><div class="bg-body-secondary rounded-4 p-4"><div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-2"><h6 class="m-0 p-0">Code</h6><button onclick="okkiCopyCode('code_447cb3fd-5e2c-4b0b-ba10-3a7c219800ef')" class="btn btn-secondary rounded-4" style="font-size:13px;"><i class="bi bi-copy me-2"></i>Copy</button></div><span class="font-monospace" id="code_447cb3fd-5e2c-4b0b-ba10-3a7c219800ef"><pre>&lt;ul class=&quot;nav nav-pills nav-fill gap-2 p-1 small bg-primary rounded-5 shadow-sm&quot; id=&quot;pillNav2&quot; role=&quot;tablist&quot; style=&quot;--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-primary); --bs-nav-pills-link-active-bg: var(--bs-white);&quot;&gt;<br />
+  &lt;li class=&quot;nav-item&quot; role=&quot;presentation&quot;&gt;<br />
+    &lt;button class=&quot;nav-link active rounded-5&quot; id=&quot;home-tab2&quot; data-bs-toggle=&quot;tab&quot; type=&quot;button&quot; role=&quot;tab&quot; aria-selected=&quot;true&quot;&gt;Home&lt;/button&gt;<br />
+  &lt;/li&gt;<br />
+  &lt;li class=&quot;nav-item&quot; role=&quot;presentation&quot;&gt;<br />
+    &lt;button class=&quot;nav-link rounded-5&quot; id=&quot;profile-tab2&quot; data-bs-toggle=&quot;tab&quot; type=&quot;button&quot; role=&quot;tab&quot; aria-selected=&quot;false&quot;&gt;Profile&lt;/button&gt;<br />
+  &lt;/li&gt;<br />
+  &lt;li class=&quot;nav-item&quot; role=&quot;presentation&quot;&gt;<br />
+    &lt;button class=&quot;nav-link rounded-5&quot; id=&quot;contact-tab2&quot; data-bs-toggle=&quot;tab&quot; type=&quot;button&quot; role=&quot;tab&quot; aria-selected=&quot;false&quot;&gt;Contact&lt;/button&gt;<br />
+ &lt;/li&gt;<br />
+&lt;/ul&gt;</pre></span></div></div><div class="col-12 mt-4"><p class="lh-lg"></p></div><div class="col-12 mt-4"><p class="lh-lg"></p></div></div></div><div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="liveToast" class="toast bg-dark text-white" role="alert" aria-live="assertive" aria-atomic="true" style="max-width:200px;">
+    <div class="toast-body text-center">
+      Скопировано
+    </div>
+  </div>
+</div>
+<script>
+    const okkiCopyCode = (query) => {
+        const copyText = document.getElementById(query);
+
+        if (copyText) {
+            const selection = window.getSelection();
+            const range = document.createRange();
+            
+            range.selectNodeContents(copyText); // Выделяем содержимое <span>
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById("liveToast"))
+
+            try {
+                navigator.clipboard.writeText(copyText.textContent || copyText.innerText); // Копируем текст
+                toastBootstrap.show()
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+            }
+
+            selection.removeAllRanges(); // Снимаем выделение
+        } else {
+            console.error('Element not found');
+        }
+    };
+</script>

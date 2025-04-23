@@ -1,0 +1,78 @@
+
+Array
+(
+)
+<div data-bs-theme="dark" class="modal fade" id="okkiPreviewImageModal" tabindex="-1" aria-labelledby="okkiPreviewImageModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-header border-0 d-flex justify-content-end">
+                <button type="button" class="btn btn-light rounded-circle py-2" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-body d-flex align-items-center justify-content-center">
+                <img id="okkiPreviewImageSrc" class="img-fluid rounded-5 bg-body-secondary" style="width:100%;" src="/source/image/600x400.svg" alt=""/>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+            <div class="col-12">
+            <div class="container-fluid py-5 d-flex flex-column gap-5" id="actionWithArticle"><div class="row gap-3"><div class="col-12"><h1 class="m-0 p-0">Unlike traditional cyberattacks that target code or infrastructure vulnerabilities, Denial of Wallet (DoW) attacks focus on draining a service&#039;s operational budget.</h1></div><div class="col-12 my-3"><p class="text-secondary m-0 p-0"><i class="bi bi-calendar-week me-2"></i>13:35, 13.02.2025</p></div><div class="col-12"><p class="m-0 lh-lg"><div class="lh-lg">Если значение $display["content"] может содержать кавычки или другие специальные символы, убедитесь, что они корректно экранированы, чтобы не нарушить синтаксис HTML или JS.</div></p></div><div class="col-12"><p class="m-0 lh-lg"><div class="lh-lg">Хотя функция работает в другом месте, стоит убедиться, что файл со скриптом, содержащим определение okkiPreviewImage, загружается до того, как динамически вставляется этот HTML.</div></p></div><div class="col-12 mb-4">
+                        
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="position-relative border-dark-subtle" style="max-width:700px;width:100%;height:auto;aspect-ratio:3/2;">
+                                <div id="preloader-bac628d5-b022-4557-9bf2-2fd7810ee8d2" class="w-100 bg-body-secondary position-absolute rounded-5 d-flex align-items-center justify-content-center" style="height:auto;aspect-ratio:3/2;rounded-5">
+                                    <i class="bi bi-youtube display-1"></i>
+                                </div>
+                                <iframe loading="lazy" data-preloader="preloader-bac628d5-b022-4557-9bf2-2fd7810ee8d2" class="rounded-5 youtube-media bg-body-secondary w-100 h-auto" style="aspect-ratio:3/2;" data-src="https://www.youtube-nocookie.com/embed/Fjgd185qqpg" title="YouTube video player" frameborder="0" allow="encrypted-media" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    </div><div class="col-12"><div class="tab-content table-responsive"><table class="table table-bordered"><thead><tr><th>123</th><th>345</th></tr></thead><tbody><tr><td>123</td><td>234</td></tr></tbody></table></div></div></div></div>        </div>
+    </div>
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast bg-dark text-white" role="alert" aria-live="assertive" aria-atomic="true"
+        style="max-width:200px;">
+        <div class="toast-body text-center">
+            Скопировано
+        </div>
+    </div>
+</div>
+<script>
+    const okkiCopyCode = (query) => {
+        const copyText = document.getElementById(query);
+        if (!copyText) return console.error('Element not found');
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(copyText);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById("liveToast"))
+        try {
+            navigator.clipboard.writeText(copyText.textContent || copyText.innerText);
+            toastBootstrap.show()
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+        } finally {
+            selection.removeAllRanges();
+        }
+    };
+    const okkiPreviewImage = (src) => document.getElementById("okkiPreviewImageSrc").src=src;
+</script>
+<script>
+    window.addEventListener("load",() => {
+        const list = [".youtube-media",".image-media"];
+        list.map(render=>{
+            document.querySelectorAll(render).forEach(block=>{
+                if (block && block.dataset.src) {
+                    block.src = block.dataset.src;
+                    delete block.dataset.src;
+                }
+                block.addEventListener("load",()=>{
+                    const idPreloader = block.dataset.preloader;
+                    const htmlBlock = document.getElementById(idPreloader);
+                    htmlBlock && htmlBlock.classList.toggle("d-none");
+                });
+            });
+        });
+    });
+</script>

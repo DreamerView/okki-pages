@@ -1,0 +1,417 @@
+<script>
+    const addGeneratedKey = (uuid, afterKey = null) => {
+        const newKey = crypto.randomUUID();
+        const table = document.querySelector(`#table-${uuid}`);
+        const arr = tableToJson(table);
+
+        console.log("Добавляем ключ после:", afterKey);
+
+        const updatedArr = arr.map(obj => {
+            if (!afterKey || !obj.hasOwnProperty(afterKey)) return { ...obj, [newKey]: "" };
+
+            const newObj = {};
+            Object.keys(obj).forEach(key => {
+                newObj[key] = obj[key]; // Копируем текущий ключ
+                if (key === afterKey) newObj[newKey] = ""; // Вставляем новый ключ после `afterKey`
+            });
+
+            return newObj;
+        });
+
+        updateTable(updatedArr, uuid);
+    };
+
+
+    const addEmptyRecord = (uuid, index) => {
+        index = parseInt(index); // Преобразуем index в число
+
+        const table = document.querySelector(`#table-${uuid}`);
+        const arr = tableToJson(table);
+        const newRecord = Object.fromEntries([...new Set(arr.flatMap(Object.keys))].map(key => [key, ""]));
+
+        index >= 0 && index < arr.length ? arr.splice(index + 1, 0, newRecord) : arr.push(newRecord);
+        updateTable(arr, uuid);
+    };
+
+
+    const jsonToTable = (json, uuid = "") => {
+        const keys = [...new Set(json.flatMap(obj => Object.keys(obj)))];
+        let html = `<table class="table table-bordered" id="table-${uuid}" data-build data-type="single" data-tag="table" data-tag-uuid="${uuid}" data-component-uuid="${uuid}">`;
+        console.log(keys);
+        json.forEach((obj, index) => {
+            html += `<tr>${keys.map(key => `
+                <td class="position-relative col" data-key="${key}">
+                    <span class="form-control text-break bg-body-secondary ${index === 0 ? 'fw-bold' : ''}" contenteditable>
+                        ${obj[key] ?? ""}
+                    </span>
+                    <div class="dropdown position-absolute" style="top: 50%; right: 0; transform: translateY(-50%);z-index:99;">
+                        <button class="btn btn-dark rounded-circle" data-bs-display="static" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu rounded-4">
+                            ${index === 0 ? `
+                                <li><h6 class="dropdown-header">Row</h6></li>
+                                <li><button onclick="addGeneratedKey('${uuid}', '${key}')" class="dropdown-item rounded-4"><i class="bi bi-arrow-right me-2 text-primary"></i>Add row</button></li>
+                                <li><button onclick="removeKeyFromArray('${uuid}', '${key}')" class="dropdown-item rounded-4"><i class="bi bi-trash2 me-2 text-primary"></i>Delete row</button></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">Column</h6></li>
+                                <li><button onclick="addEmptyRecord('${uuid}', '${index}')" class="dropdown-item rounded-4"><i class="bi bi-arrow-down me-2 text-primary"></i>Add column</button></li>
+                            ` : `
+                                <li><h6 class="dropdown-header">Column</h6></li>
+                                <li><button onclick="addEmptyRecord('${uuid}', '${index}')" class="dropdown-item rounded-4"><i class="bi bi-arrow-down me-2 text-primary"></i>Add column</button></li>
+                                <li><button onclick="removeRowByIndex('${uuid}', '${index}')" class="dropdown-item rounded-4"><i class="bi bi-trash2 me-2 text-primary"></i>Delete column</button></li>
+                            `}
+                        </ul>
+                    </div>
+                </td>`).join("")}
+            </tr>`;
+        });
+
+        return html + `</table>`;
+    }
+
+    const tableToJson = (table) => {
+        return [...table.rows].map(row => Object.fromEntries(
+            [...row.cells].map(cell => [cell.dataset.key, cell.querySelector("span")?.textContent.trim() || ""])
+        ));
+    }
+
+    const removeKeyFromArray = (uuid, keyToRemove) => {
+        const table = document.querySelector(`#table-${uuid}`);
+        const arr = tableToJson(table);
+
+        if ([...new Set(arr.flatMap(Object.keys))].length <= 1) {
+            console.warn("Нельзя удалить последний ключ. Должен остаться хотя бы один.");
+            return;
+        }
+
+        updateTable(arr.map(obj => (delete obj[keyToRemove], obj)), uuid);
+    };
+
+
+    const removeRowByIndex = (uuid, index) => {
+        const table = document.querySelector(`#table-${uuid}`);
+        const arr = tableToJson(table);
+
+        return index < 0 || index >= arr.length
+            ? console.error("Ошибка: индекс выходит за границы массива.")
+            : (arr.splice(index, 1), updateTable(arr, uuid));
+    };
+
+
+    const updateTable = (json, uuid) => {
+        const tableContainer = document.getElementById(`table-render-${uuid}`);
+        console.log(tableContainer);
+        if (tableContainer) tableContainer.innerHTML = jsonToTable(json, uuid);
+    }
+
+</script>
+<script>
+    class panelInstrument {
+        dropdownListPanel = (uuid) => 
+            `<div class="dropdown">
+                <button class="btn btn-dark border rounded-circle more-btn py-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <ul data-bs-theme="dark" class="dropdown-menu dropdown-menu-lg-end rounded-4 mt-1">
+                    <li><button onclick="modeBlock('${uuid}','up')" class="dropdown-item rounded-4" data-bs-toggle="modal" data-bs-target="#moreInstrumentModal"><i class="bi bi-arrow-up me-2"></i>Create block</button></li>
+                    <li><button onclick="modeBlock('${uuid}','down')" class="dropdown-item rounded-4" data-bs-toggle="modal" data-bs-target="#moreInstrumentModal"><i class="bi bi-arrow-down me-2"></i>Create block</button></li>
+                    <li><button onclick="deleteBlock('${uuid}')" class="dropdown-item rounded-4"><i class="bi bi-trash me-2"></i>Delete</button></li>
+                </ul>
+            </div>`;
+        headerPanel = (uuid, value = "") =>
+                `<div class="row sender" id="${uuid}">
+                        <div class="col-11 move-block-hidden pb-4 border-bottom">
+                            <h2 contenteditable oninput="inputTextArea(event)" data-build data-type="single" data-tag="header" data-tag-uuid="${uuid}" data-component-uuid="${uuid}" rows="1" data-placeholder="Enter new header" name="header" class="form-control fw-bold border-0 lh-base m-0" style="resize:none; font-size:2rem;">${value}</h2>
+                        </div>
+                        <div class="col-11 move-block-show d-none">
+                            <div class="bg-body-secondary p-3 rounded-4">
+                                <h6 class="m-0">Header 2</h6>
+                                <p style="font-size:13px;" id="placeholder-${uuid}" class="m-0 mt-3"></p>
+                            </div>
+                        </div>
+                        <div class="position-relative col-1 d-flex gap-2 justify-content-end align-items-center">
+                            <button class="btn bg-body-secondary move-btn d-none">
+                                <i class="bi bi-arrows-move"></i>
+                            </button>
+                            ${this.dropdownListPanel(uuid)}
+                        </div>
+                    </div>
+                    `;
+        header3Panel = (uuid, value = "") =>
+                `<div class="row sender" id="${uuid}">
+                        <div class="col-11 move-block-hidden">
+                            <h3 contenteditable oninput="inputTextArea(event)" data-build data-type="single" data-tag="header-3" data-tag-uuid="${uuid}" data-component-uuid="${uuid}" rows="1" data-placeholder="Enter new header" name="header" class="form-control fw-bold border-0 lh-base m-0" style="resize:none;font-size:1.5rem">${value}</h3>
+                        </div>
+                        <div class="col-11 move-block-show d-none">
+                            <div class="bg-body-secondary p-3 rounded-4">
+                                <h6 class="m-0">Header 3</h6>
+                                <p style="font-size:13px;" id="placeholder-${uuid}" class="m-0 mt-3"></p>
+                            </div>
+                        </div>
+                        <div class="col-1 d-flex gap-2 justify-content-end align-items-center">
+                            <button class="btn bg-body-secondary move-btn d-none">
+                                <i class="bi bi-arrows-move"></i>
+                            </button>
+                            ${this.dropdownListPanel(uuid)}
+                        </div>
+                    </div>
+                    `;
+        header4Panel = (uuid, value = "") =>
+                `<div class="row sender" id="${uuid}">
+                        <div class="col-11 move-block-hidden">
+                            <h4 contenteditable oninput="inputTextArea(event)" data-build data-type="single" data-tag="header-4" data-tag-uuid="${uuid}" data-component-uuid="${uuid}" rows="1" data-placeholder="Enter new header" name="header" class="form-control fw-bold border-0 lh-base m-0" style="resize:none;font-size:1.2rem;">${value}</h4>
+                        </div>
+                        <div class="col-11 move-block-show d-none">
+                            <div class="bg-body-secondary p-3 rounded-4">
+                                <h6 class="m-0">Header 4</h6>
+                                <p style="font-size:13px;" id="placeholder-${uuid}" class="m-0 mt-3"></p>
+                            </div>
+                        </div>
+                        <div class="col-1 d-flex gap-2 justify-content-end align-items-center">
+                            <button class="btn bg-body-secondary move-btn d-none">
+                                <i class="bi bi-arrows-move"></i>
+                            </button>
+                            ${this.dropdownListPanel(uuid)}
+                        </div>
+                    </div>
+                    `;
+        header5Panel = (uuid, value = "") =>
+                `<div class="row sender" id="${uuid}">
+                        <div class="col-11 move-block-hidden">
+                            <h5 contenteditable oninput="inputTextArea(event)" data-build data-type="single" data-tag="header-5" data-tag-uuid="${uuid}" data-component-uuid="${uuid}" rows="1" data-placeholder="Enter new header" name="header" class="form-control fw-bold border-0 lh-base m-0 fs-5" style="resize:none; font-size:1.1rem;">${value}</h5>
+                        </div>
+                        <div class="col-11 move-block-show d-none">
+                            <div class="bg-body-secondary p-3 rounded-4">
+                                <h6 class="m-0">Header 5</h6>
+                                <p style="font-size:13px;" id="placeholder-${uuid}" class="m-0 mt-3"></p>
+                            </div>
+                        </div>
+                        <div class="col-1 d-flex gap-2 justify-content-end align-items-center">
+                            <button class="btn bg-body-secondary move-btn d-none">
+                                <i class="bi bi-arrows-move"></i>
+                            </button>
+                            ${this.dropdownListPanel(uuid)}
+                        </div>
+                    </div>
+                    `;
+        header6Panel = (uuid, value = "") =>
+                `<div class="row sender" id="${uuid}">
+                        <div class="col-11 move-block-hidden">
+                            <h6 contenteditable oninput="inputTextArea(event)" data-build data-type="single" data-tag="header-6" data-tag-uuid="${uuid}" data-component-uuid="${uuid}" rows="1" data-placeholder="Enter new header" name="header" class="form-control fw-bold border-0 lh-base m-0 fs-6" style="resize:none; font-size:1rem;">${value}</h6>
+                        </div>
+                        <div class="col-11 move-block-show d-none">
+                            <div class="bg-body-secondary p-3 rounded-4">
+                                <h6 class="m-0">Header 6</h6>
+                                <p style="font-size:13px;" id="placeholder-${uuid}" class="m-0 mt-3"></p>
+                            </div>
+                        </div>
+                        <div class="col-1 d-flex gap-2 justify-content-end align-items-center">
+                            <button class="btn bg-body-secondary move-btn d-none">
+                                <i class="bi bi-arrows-move"></i>
+                            </button>
+                            ${this.dropdownListPanel(uuid)}
+                        </div>
+                    </div>
+                    `;
+        paragraphPanel = (uuid, value = "") => 
+            `<div class="row sender" id="${uuid}">
+                <div class="col-11 move-block-hidden">
+                    <div contenteditable data-build data-type="single" oninput="inputTextArea(event)" data-tag="paragraph" data-tag-uuid="${uuid}" data-component-uuid="${uuid}" rows="1" data-placeholder="Enter new header" name="paragraph" class="form-control border-0 lh-lg m-0" style="resize:none;">${value}</div>
+                </div>
+                <div class="col-11 move-block-show d-none">
+                    <div class="bg-body-secondary p-3 rounded-4">
+                        <h6 class="m-0">Paragraph</h6>
+                        <p style="font-size:13px;" id="placeholder-${uuid}" class="m-0 mt-3"></p>
+                    </div>
+                </div>
+                <div class="col-1 d-flex gap-2 justify-content-end align-items-center">
+                    <button class="btn bg-body-secondary move-btn d-none">
+                        <i class="bi bi-arrows-move"></i>
+                    </button>
+                    ${this.dropdownListPanel(uuid)}
+                </div>
+            </div>
+            `;
+        blockquotePanel = (uuid, value = "") => 
+            `<div class="row sender" id="${uuid}">
+                <div class="col-11 move-block-hidden">
+                    <blockquote contenteditable data-build data-type="single" oninput="inputTextArea(event)" data-tag="blockquote" data-tag-uuid="${uuid}" data-component-uuid="${uuid}" rows="1" data-placeholder="Enter new header" name="paragraph" class="form-control border-0 lh-lg m-0 border-start border-4 border-info mx-2 px-4" style="resize:none;">${value}</blockquote>
+                </div>
+                <div class="col-11 move-block-show d-none">
+                    <div class="bg-body-secondary p-3 rounded-4">
+                        <h6 class="m-0">Blockquote</h6>
+                        <p style="font-size:13px;" id="placeholder-${uuid}" class="m-0 mt-3"></p>
+                    </div>
+                </div>
+                <div class="col-1 d-flex gap-2 justify-content-end align-items-center">
+                    <button class="btn bg-body-secondary move-btn d-none">
+                        <i class="bi bi-arrows-move"></i>
+                    </button>
+                    ${this.dropdownListPanel(uuid)}
+                </div>
+            </div>`;
+        tablePanel = (uuid, value = null) => { 
+            return(`<div class="row sender" id="${uuid}">
+                    <div class="col-11 move-block-hidden" id="table-render-${uuid}">
+                        ${jsonToTable(value,uuid)}
+                    </div>
+                    <div class="col-11 move-block-show d-none">
+                        <div class="bg-body-secondary p-3 rounded-4">
+                            <h6 class="m-0">Table</h6>
+                            <p style="font-size:13px;" id="placeholder-${uuid}" class="m-0 mt-3"></p>
+                        </div>
+                    </div>
+                    <div class="col-1 d-flex gap-2 justify-content-end align-items-center">
+                        <button class="btn bg-body-secondary move-btn d-none">
+                            <i class="bi bi-arrows-move"></i>
+                        </button>
+                        ${this.dropdownListPanel(uuid)}
+                    </div>
+                </div>
+                `)
+                };
+        imagePanel = (uuid, value = "/source/image/600x400.svg") => 
+            `<div class="row sender" id="${uuid}" data-delete="image">
+                <div class="col-11 move-block-hidden">
+                    <div class="w-100 d-flex flex-column align-items-center my-4">
+                        <img id="image_${uuid}" onclick="document.getElementById('upload_image_${uuid}').click()" src="${value}" class="bg-body-secondary rounded-4 mb-4 border border-dark-subtle" style="max-width:700px;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;"/>
+                        <input accept="image/*" type="file" style="display:none;" id="upload_image_${uuid}" onchange="uploadImage(event,'${uuid}')" />
+                        <input data-type="single" data-build data-tag="image" data-tag-uuid="${uuid}" data-component-uuid="${uuid}" id="hidden_image_url_${uuid}" type="hidden" name="image_url" value="${value}"/>
+                    </div>
+                </div>
+                <div class="col-11 move-block-show d-none">
+                    <div class="bg-body-secondary p-3 rounded-4">
+                        <h6 class="m-0">Image</h6>
+                    </div>
+                </div>
+                <div class="col-1 d-flex gap-2 justify-content-end align-items-center">
+                    <button class="btn bg-body-secondary move-btn d-none">
+                        <i class="bi bi-arrows-move"></i>
+                    </button>
+                    ${this.dropdownListPanel(uuid)}
+                </div>
+            </div>`;
+        codePreviewPanel = (uuid, value = "") => 
+            `<div class="row sender" id="${uuid}">
+                <div class="col-11 move-block-hidden">
+                    <div class="p-2 my-4" >
+                        <span class="fw-light">Code Preview</span>
+                        <textarea oninput="inputTextArea(event)" data-build data-type="single" data-tag="code-preview" data-tag-uuid="${uuid}" data-component-uuid="${uuid}" rows="1" placeholder="Enter HTML Code" name="html-code" class="form-control bg-body-secondary border-0 mt-3" style="resize:none;">${value}</textarea>
+                    </div>
+                </div>
+                <div class="col-11 move-block-show d-none">
+                    <div class="bg-body-secondary p-3 rounded-4">
+                        <h6 class="m-0">Code</h6>
+                        <p style="font-size:13px;" id="placeholder-${uuid}" class="m-0 mt-3"></p>
+                    </div>
+                </div>
+                <div class="col-1 d-flex gap-2 justify-content-end align-items-center">
+                    <button class="btn bg-body-secondary move-btn d-none">
+                        <i class="bi bi-arrows-move"></i>
+                    </button>
+                    ${this.dropdownListPanel(uuid)}
+                </div>
+            </div>
+            `;
+        youtubePanel = (uuid, value = "") => 
+            `<div class="row sender" id="${uuid}">
+                <div class="col-11 move-block-hidden">
+                    <div class="p-4 my-4 rounded-5 bg-dark mx-auto" style="max-width:700px;width:100%;object-fit:cover;">
+                        <span  class="text-white fw-bold d-flex align-items-center gap-2 m-0 p-0"><i class="bi bi-youtube fs-4"></i>Youtube Video</span>
+                        <textarea oninput="inputTextArea(event)" data-build data-type="single" data-tag="youtube" data-tag-uuid="${uuid}" data-component-uuid="${uuid}" rows="1" placeholder="Enter youtube link" name="html-code" class="form-control bg-body border-0 mt-3" style="resize:none;">${value}</textarea>
+                    </div>
+                </div>
+                <div class="col-11 move-block-show d-none">
+                    <div class="bg-body-secondary p-3 rounded-4">
+                        <h6 class="m-0">Youtube</h6>
+                        <p style="font-size:13px;" id="placeholder-${uuid}" class="m-0 mt-3"></p>
+                    </div>
+                </div>
+                <div class="col-1 d-flex gap-2 justify-content-end align-items-center">
+                    <button class="btn bg-body-secondary move-btn d-none">
+                        <i class="bi bi-arrows-move"></i>
+                    </button>
+                    ${this.dropdownListPanel(uuid)}
+                </div>
+            </div>
+            `;
+        listPanel = (tag, uuid, multiple = []) => 
+            `<div class="row sender" id="${uuid}">
+                <div class="col-11 move-block-hidden">
+                    <${tag} id="${tag}-${uuid}">
+                        ${multiple.map(render=>`
+                        <li class="ms-4 my-3" id="${tag}-list-${render.component_uuid}">
+                            <div class="row">
+                                <div class="col-11">
+                                    <div contenteditable data-build data-type="multiple" data-tag="${tag}" data-tag-uuid="${uuid}" data-component-uuid="${render.component_uuid}" rows="1" data-placeholder="Enter new header" name="paragraph" class="form-control border-0" style="resize:none;">${render.content}</div>
+                                </div>
+                                <div class="col-1">
+                                    <button onclick="deleteBlock('${tag}-${uuid}')" class="btn bg-body-secondary"><i class="bi bi-trash2"></i></button>
+                                </div>
+                            </div>
+                        </li>`).join("")}
+                    </${tag}>
+                    <button onclick="addList('${tag}','${uuid}')" class="btn btn-secondary ms-4">Add list</button>
+                </div>
+                <div class="col-11 move-block-show d-none">
+                    <div class="bg-body-secondary p-3 rounded-4">
+                        <h6 class="m-0">Mark list</h6>
+                    </div>
+                </div>
+                <div class="col-1 d-flex gap-2 justify-content-end align-items-center">
+                    <button class="btn bg-body-secondary move-btn d-none">
+                        <i class="bi bi-arrows-move"></i>
+                    </button>
+                    ${this.dropdownListPanel(uuid)}
+                </div>
+            </div>`;
+        imageMultipleComponent = (uuid,index,value) => 
+            `<div class="col-xl-2 col-sm-3 col-4 mb-4 position-relative" id="images-list-${index}">
+                <div class="dropdown position-absolute" style="right:0;top:0;">
+                    <button class="btn btn-dark border rounded-circle more-btn py-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </div>
+                <div class="w-100 bg-body-secondary rounded-5" style="height:auto;aspect-ratio:1/1;">
+                    <img id="image_${index}" onclick="document.getElementById('upload_image_${index}').click()" src="${value}" class="bg-body-secondary rounded-5 border border-dark-subtle" style="width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;"/>
+                    <input accept="image/*" type="file" style="display:none;" id="upload_image_${index}" onchange="uploadImage(event,'${index}')" />
+                    <input data-type="multiple" data-build data-tag="image" data-tag-uuid="${uuid}" data-component-uuid="${index}" id="hidden_image_url_${index}" type="hidden" name="image_url" value="${value}"/>
+                </div>
+            </div>`;
+        imageListPanel = (uuid, multiple = []) => 
+            `<div class="row" id="${uuid}">
+                <div class="col-10">
+                    <div class="row">
+                        ${multiple.map(render=>this.imageMultipleComponent(uuid,render['component_uuid'],render['content'])).join("")}
+                        <div class="col-xl-2 col-sm-3 col-4" id="image-list-add-${uuid}" onclick="addImageList('${uuid}')">
+                            <div class="w-100 border-dark-subtle rounded-5 d-flex align-items-center justify-content-center" style="border-style: dashed;height:auto;aspect-ratio:1/1; cursor:pointer">
+                                <i class="bi bi-plus-circle-dotted display-3 text-secondary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2 d-flex gap-2 justify-content-end align-items-center">
+                    <button class="btn bg-body-secondary move-btn d-none">
+                        <i class="bi bi-arrows-move"></i>
+                    </button>
+                    ${this.dropdownListPanel(uuid)}
+                </div>
+            </div>`;
+    };
+    const panel = new panelInstrument();
+</script>
+<script>
+    const addImageList = (uuid) => {
+        const value = "/source/image/100.svg";
+        const index = self.crypto.randomUUID();
+        const imageListAdd = document.getElementById("image-list-add-"+uuid);
+        const html = panel.imageMultipleComponent(uuid,index,value);
+        imageListAdd.insertAdjacentHTML("beforebegin",html);
+    };
+</script>

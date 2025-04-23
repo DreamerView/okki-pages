@@ -1,0 +1,74 @@
+<script>
+    function setupImageCropper(modalId, uploadInputId, cropperImageId, cropBtnId, resultId, uuid) {
+        let cropper;
+        const modal = new bootstrap.Modal(document.getElementById(modalId));
+        const imageElement = document.getElementById(cropperImageId);
+        const uploadInput = document.getElementById(uploadInputId);
+        const cropBtn = document.getElementById(cropBtnId);
+        const resultImage = document.getElementById(resultId);
+        uploadInput.addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function() {
+                imageElement.src = reader.result;
+                imageElement.style.display = "block";
+                // Открываем модальное окно
+                modal.show();
+                // Ждём, пока модальное окно полностью отобразится, затем берём его размеры
+                document.getElementById(modalId).addEventListener("shown.bs.modal", function() {
+                    const modalBody = document.querySelector(`#${modalId} .modal-body`);
+                    const modalWidth = modalBody.clientWidth - 32; // Берём ширину только этого modal-body
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(imageElement, {
+                        viewMode: 2,
+                        aspectRatio: 3 / 2,
+                        minContainerWidth: modalWidth,
+                        minContainerHeight: modalWidth * (2 / 3) // Высота авто по 3:2
+                    });
+                }, {
+                    once: true
+                }); // Слушаем событие только один раз
+            };
+            reader.readAsDataURL(file);
+        });
+        cropBtn.addEventListener("click", function () {
+            if (!cropper) return;
+
+            const croppedCanvas = cropper.getCroppedCanvas({
+                width: 600,
+                height: 600 * (2 / 3),
+                fillColor: '#fff' // Белый фон
+            });
+
+            croppedCanvas.toBlob((blob) => {
+                const formData = new FormData();
+                formData.append("image", blob, uuid + ".webp"); // Название файла = UUID.webp
+                formData.append("uuid", uuid);
+
+                // Отправка через fetch
+                fetch("/backend/upload-promo-article.php", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        resultImage.src = URL.createObjectURL(blob); // Показываем результат
+                        console.log("Файл успешно загружен:", data.file);
+                    } else {
+                        console.error("Ошибка загрузки:", data.error);
+                    }
+                })
+                .catch(error => console.error("Ошибка:", error));
+
+            }, "image/webp", 0.8);
+
+            modal.hide();
+        });
+    }
+    // Запуск для конкретного модального окна
+    window.addEventListener("load",()=>{
+        setupImageCropper("cropperModal", "uploadImage", "cropperImage", "cropImage", "croppedResult","<?=$_GET['article'];?>");
+    })
+</script>

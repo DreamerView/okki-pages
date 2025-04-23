@@ -1,0 +1,235 @@
+<div data-bs-theme="dark" class="modal fade" id="moreInstrumentModal" tabindex="-1" aria-labelledby="moreInstrumentModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered p-lg-5 mx-auto" style="max-width: 1000px;width:calc(100% - 32px);">
+        <div class="modal-content border-0 text-body p-3 rounded-5">
+            <div class="modal-header border-0">
+                <h1 class="modal-title fs-3" id="moreInstrumentModalLabel">Add component</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-0">
+                <div class="row">
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                        <h6 class="ps-3 text-secondary">Header</h6>
+                        <div class="list-group list-group-flush p-2">
+                            <button onclick="createBlock('header')" type="button"
+                                class="list-group-item list-group-item-action py-3 rounded-5 border-0">
+                                <i class="bi bi-type-h2 me-3 text-primary"></i>Header 2
+                            </button>
+                            <button onclick="createBlock('header-3')" type="button"
+                                class="list-group-item list-group-item-action py-3 rounded-5 border-0">
+                                <i class="bi bi-type-h3 me-3 text-primary"></i>Header 3
+                            </button>
+                            <button onclick="createBlock('header-4')" type="button"
+                                class="list-group-item list-group-item-action py-3 rounded-5 border-0">
+                                <i class="bi bi-type-h4 me-3 text-primary"></i>Header 4
+                            </button>
+                            <button onclick="createBlock('header-5')" type="button"
+                                class="list-group-item list-group-item-action py-3 rounded-5 border-0">
+                                <i class="bi bi-type-h5 me-3 text-primary"></i>Header 5
+                            </button>
+                            <button onclick="createBlock('header-6')" type="button"
+                                class="list-group-item list-group-item-action py-3 rounded-5 border-0">
+                                <i class="bi bi-type-h6 me-3 text-primary"></i>Header 6
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                        <h6 class="ps-3 text-secondary">Text</h6>
+                        <div class="list-group list-group-flush p-2">
+                            <button onclick="createBlock('paragraph')" type="button"
+                                class="list-group-item list-group-item-action py-3 rounded-5 border-0">
+                                <i class="bi bi-fonts me-3 text-primary"></i>Paragraph
+                            </button>
+                            <button onclick="createBlock('blockquote')" type="button"
+                                class="list-group-item list-group-item-action py-3 rounded-5 border-0">
+                                <i class="bi bi-quote me-3 text-primary"></i>Blockquote
+                            </button>
+                            <button onclick="createBlock('ul-list')" type="button"
+                                class="list-group-item list-group-item-action py-3 rounded-5 border-0">
+                                <i class="bi bi-list-ul me-3 text-primary"></i>Mark list
+                            </button>
+                            <button onclick="createBlock('ol-list')" type="button"
+                                class="list-group-item list-group-item-action py-3 rounded-5 border-0">
+                                <i class="bi bi-list-ol me-3 text-primary"></i>Num list
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                        <h6 class="ps-3 text-secondary">Media</h6>
+                        <div class="list-group list-group-flush p-2">
+                            <button onclick="createBlock('image')" type="button"
+                                class="list-group-item list-group-item-action py-3 rounded-5 border-0">
+                                <i class="bi bi-image-fill me-3 text-primary"></i>Single image
+                            </button>
+                            <button onclick="createBlock('images')" type="button"
+                                class="list-group-item list-group-item-action py-3 rounded-5 border-0">
+                                <i class="bi bi-images me-3 text-primary"></i>Multiple images
+                            </button>
+                            <button onclick="createBlock('youtube')" type="button"
+                                class="list-group-item list-group-item-action py-3 rounded-5 border-0">
+                                <i class="bi bi-youtube me-3 text-primary"></i>Youtube video
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                        <h6 class="ps-3 text-secondary">Other</h6>
+                        <div class="list-group list-group-flush p-2">
+                            <button onclick="createBlock('table')" type="button"
+                                class="list-group-item list-group-item-action py-3 rounded-5 border-0">
+                                <i class="bi bi-table me-3 text-primary"></i>Table
+                            </button>
+                            <button onclick="createBlock('code-preview')" type="button"
+                                class="list-group-item list-group-item-action py-3 rounded-5 border-0">
+                                <i class="bi bi-code-slash me-3 text-primary"></i>Code Preview
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="loadingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm d-flex flex-column align-items-center; justify-content-center">
+        <div data-bs-theme="dark" class="modal-content rounded-5" style="background: hsla(0, 0%, 0%, 0.5)!important;backdrop-filter: blur(10px);-webkit-backdrop-filter: blur(10px);height:200px;max-width:200px">
+            <div class="modal-body" id="startLoading">
+                <div class="d-flex flex-column align-items-center justify-content-center h-100">
+                    <div class="spinner-border text-light" style="width: 6rem; height: 6rem;" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body d-none" id="successLoading">
+                <div class="d-flex flex-column align-items-center justify-content-center h-100">
+                    <h1 style="font-size:120px;color:#30DB5B;"><i class="bi bi-check2-circle"></i></h1>
+                </div>
+            </div>
+            <div class="modal-body d-none" id="errorLoading">
+                <div class="d-flex flex-column align-items-center justify-content-center h-100">
+                    <h1 style="font-size:100px;color:#FF6961;"><i class="bi bi-exclamation-circle"></i></h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="savedModal" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="savedModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm d-flex flex-column align-items-center; justify-content-center">
+        <div class="modal-content rounded-5 text-white" style="background: hsla(0, 0%, 0%, 0.5)!important;backdrop-filter: blur(10px);-webkit-backdrop-filter: blur(10px);height:200px;max-width:200px">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex flex-column align-items-center justify-content-center h-100">
+                    <h1>Saved</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div data-bs-theme="dark" class="modal fade" id="articleInfoBlockModal" tabindex="-1" aria-labelledby="articleInfoBlockModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered px-md-5">
+        <div class="modal-content border-0 rounded-5 p-3 text-white">
+            <div class="modal-header border-0">
+                <h1 class="modal-title fs-3" id="articleInfoBlockModalLabel">Article info</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form onsubmit="sumbutArticleInfo(event)" class="modal-body">
+                <div class="row">
+                    <div class="col-lg-6 col-12">
+                        <div class="mb-4">
+                            <label for="articleInfoTitle" class="form-label">Title</label>
+                            <input type="text" class="form-control rounded-4 bg-body-secondary" id="articleInfoTitle" placeholder="New title" required/>
+                        </div>
+                        <div class="mb-4">
+                            <label for="articleInfoStatus" class="form-label">View mode</label>
+                            <select class="form-select rounded-4 bg-body-secondary" id="articleInfoStatus">
+                                <option value="0">Public</option>
+                                <option value="1">Private</option>
+                                <option value="2">Link</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label for="articleInfoDesc" class="form-label">Description</label>
+                            <textarea class="form-control bg-body-secondary rounded-4" placeholder="New description" id="articleInfoDesc" style="height: 100px"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <div class="mb-4">
+                            <label for="articleInfoPromo" class="uploadImage">Promo Image</label>
+                            <input type="file" id="uploadImage" accept="image/*" class="d-none">
+                            <input type="file" id="processedImage" name="processedImage" class="d-none">
+                            <img onclick="document.getElementById('uploadImage').click()" src="/source/image/600x400.svg" id="croppedResult" class="w-100 h-auto rounded-4 mt-3 bg-body-secondary" style="cursor: pointer;">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="w-100 btn btn-primary py-2 rounded-4">Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="cropperModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Обрезка изображения</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="img-container">
+                    <img id="cropperImage" class="w-100 h-auto">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cropImage" class="btn btn-primary">Обрезать</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const fetchArticleInfo = async() => {
+        const modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#articleInfoBlockModal'));    
+        const req = await fetch("/backend/single-article-info.php?article=<?php echo $get;?>");
+        const res = await req.json();
+
+        if(res['status']!=="success") return;
+        modal.show();
+        document.getElementById("articleInfoStatus").value = res['view'];
+        document.getElementById("articleInfoDesc").value = res['description'];
+        document.getElementById("articleInfoTitle").value = res['title'];
+        document.getElementById("croppedResult").src = res['image'];
+    }
+    const sumbutArticleInfo = async(event) => {
+        const modal = bootstrap.Modal.getInstance(document.querySelector('#articleInfoBlockModal'));    
+        modal.hide();
+        const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'))
+        loadingModal.show();
+        startPreloader("start");
+        event.preventDefault();
+        const data = {
+            title : document.getElementById("articleInfoTitle").value,
+            description : document.getElementById("articleInfoDesc").value,
+            view: document.getElementById("articleInfoStatus").value,
+            uuid:"<?php echo $get;?>"
+        };
+
+        const req = await fetch("/backend/submit-article-info.php",{
+            method:"PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        const res = await req.json();
+
+        if(res['status']==="error") {
+            startPreloader("error",loadingModal);
+            return;
+        }
+
+        startPreloader("success",loadingModal);
+        
+        document.getElementById("title-page").value = data['title'];
+
+    }
+</script>

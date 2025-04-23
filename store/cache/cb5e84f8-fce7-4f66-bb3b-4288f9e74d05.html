@@ -1,0 +1,36 @@
+
+
+<div class="container py-5"><div class="row"><div class="col-12"><h1>СКРТ</h1></div><div class="col-12 mt-4"><h2>1234</h2></div><div class="col-12 mt-4"><ul class="d-flex flex-column gap-4"><li class="mx-lg-4 ms-2">1234</li><li class="mx-lg-4 ms-2">56789</li></ul></div><div class="col-12 mt-4"><p class="lh-lg">12345</p></div></div></div><div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="liveToast" class="toast bg-dark text-white" role="alert" aria-live="assertive" aria-atomic="true" style="max-width:200px;">
+    <div class="toast-body text-center">
+      Скопировано
+    </div>
+  </div>
+</div>
+<script>
+    const okkiCopyCode = (query) => {
+        const copyText = document.getElementById(query);
+
+        if (copyText) {
+            const selection = window.getSelection();
+            const range = document.createRange();
+            
+            range.selectNodeContents(copyText); // Выделяем содержимое <span>
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById("liveToast"))
+
+            try {
+                navigator.clipboard.writeText(copyText.textContent || copyText.innerText); // Копируем текст
+                toastBootstrap.show()
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+            }
+
+            selection.removeAllRanges(); // Снимаем выделение
+        } else {
+            console.error('Element not found');
+        }
+    };
+</script>

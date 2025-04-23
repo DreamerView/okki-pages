@@ -1,0 +1,192 @@
+<script>
+    // document.addEventListener("selectionchange", () => {
+    //     const sel = window.getSelection();
+    //     if (!sel || sel.rangeCount === 0) return;
+        
+    //     const range = sel.getRangeAt(0);
+
+    //     // Функция для поиска ближайшего родительского элемента <b>
+    //     const findAncestorBold = (node) => {
+    //         while (node) {
+    //         if (node.nodeType === Node.ELEMENT_NODE && node.tagName.toLowerCase() === "b") {
+    //             return node;
+    //         }
+    //         node = node.parentNode;
+    //         }
+    //         return null;
+    //     };
+
+    //     // Находим ближайшие элементы <b> для начала и конца выделения
+    //     const startBold = findAncestorBold(range.startContainer);
+    //     const endBold = findAncestorBold(range.endContainer);
+
+    //     // Если оба найдены и они совпадают, значит весь выделенный текст находится внутри одного <b>
+    //     const isWrappedInBold = startBold && endBold && (startBold === endBold);
+        
+    //     console.log(isWrappedInBold);
+    // });
+    
+
+    const findAncestorBold = node => {
+        while (node) {
+            if (node.nodeType === Node.ELEMENT_NODE && node.tagName.toLowerCase() === "b") {
+            return node;
+            }
+            node = node.parentNode;
+        }
+        return null;
+    };
+
+    const toggleTextAlign = (alignment) => {
+        const sel = window.getSelection();
+        if (!sel.rangeCount) return;
+        
+        const range = sel.getRangeAt(0);
+        // Проверяем, что выделен хотя бы один символ
+        if (range.collapsed) {
+            console.warn("Текст не выделен. Выделите текст для применения выравнивания.");
+            return;
+        }
+
+        // Функция для поиска ближайшего родительского элемента <span> с установленным text-align
+        const findAncestorSpan = (node) => {
+            while (node) {
+            if (
+                node.nodeType === Node.ELEMENT_NODE &&
+                node.tagName.toLowerCase() === "span" &&
+                node.style.textAlign
+            ) {
+                return node;
+            }
+            node = node.parentNode;
+            }
+            return null;
+        };
+
+        const startSpan = findAncestorSpan(range.startContainer);
+        const endSpan = findAncestorSpan(range.endContainer);
+
+        if (alignment === "left") {
+            // Если выбран left, удаляем обёртку, если она присутствует
+            if (startSpan && endSpan && startSpan === endSpan) {
+            const fragment = document.createDocumentFragment();
+            while (startSpan.firstChild) {
+                fragment.appendChild(startSpan.firstChild);
+            }
+            startSpan.parentNode.replaceChild(fragment, startSpan);
+            }
+        } else {
+            if (startSpan && endSpan && startSpan === endSpan) {
+            // Если обёртка уже существует, обновляем стиль
+            startSpan.style.textAlign = alignment;
+            } else {
+            // Создаём новый <span> с display: block для корректного применения text-align
+            const span = document.createElement("span");
+            span.style.display = "block";
+            span.style.textAlign = alignment;
+            try {
+                range.surroundContents(span);
+            } catch (err) {
+                console.error(`Ошибка при обёртывании выделения в <span> с выравниванием '${alignment}':`, err);
+            }
+            }
+        }
+        
+        // Снимаем выделение
+        sel.removeAllRanges();
+    };
+
+
+
+    const toggleFormat = (tagName) => {
+        const sel = window.getSelection();
+        if (!sel.rangeCount) return;
+        const range = sel.getRangeAt(0);
+
+        // Функция поиска родительского элемента с указанным тегом
+        const findAncestor = (node) => {
+            while (node) {
+            if (node.nodeType === Node.ELEMENT_NODE && node.tagName.toLowerCase() === tagName.toLowerCase()) {
+                return node;
+            }
+            node = node.parentNode;
+            }
+            return null;
+        };
+
+        const startAncestor = findAncestor(range.startContainer);
+        const endAncestor = findAncestor(range.endContainer);
+
+        if (startAncestor && endAncestor && startAncestor === endAncestor) {
+            // Если выделение уже обёрнуто в нужный тег, убираем обёртку:
+            const fragment = document.createDocumentFragment();
+            while (startAncestor.firstChild) {
+            fragment.appendChild(startAncestor.firstChild);
+            }
+            startAncestor.parentNode.replaceChild(fragment, startAncestor);
+        } else {
+            // Оборачиваем выделенный текст в нужный элемент
+            const elem = document.createElement(tagName);
+            try {
+            range.surroundContents(elem);
+            } catch (err) {
+            console.error(`Ошибка оборачивания выделения в <${tagName}>:`, err);
+            }
+        }
+        sel.removeAllRanges();
+    };
+
+
+    window.addEventListener("keydown", e => {
+        if (e.ctrlKey && (e.key === "b" || e.code === "KeyB")) {
+            e.preventDefault();
+            toggleBold();
+        }
+    });
+
+
+
+    document.addEventListener("paste", (event) => {
+        const el = event.target;
+        if (el.isContentEditable) { // Проверяем, что вставка произошла в contenteditable
+            const clipboardData = event.clipboardData || window.clipboardData;
+            const items = clipboardData.items;
+
+            // Проверяем, есть ли в буфере медиа-контент (например, изображения или файлы)
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (item.type.startsWith("image") || item.type.startsWith("video") || item.kind === "file") {
+                    event.preventDefault(); // Отменяем вставку медиа-контента
+                    alert("Вставка медиа-контента запрещена!");
+                    return;
+                }
+            }
+
+            // Разрешаем вставку только текстового контента
+            const text = clipboardData.getData("text");
+            event.preventDefault(); // Отменяем стандартную вставку
+            document.execCommand("insertText", false, text);
+        }
+    });
+
+    document.addEventListener("drop", (event) => {
+        const el = event.target;
+        if (el.isContentEditable) {
+            event.preventDefault(); // Отменяем стандартную вставку, чтобы не вставить медиа-контент
+
+            // Проверяем данные, которые перетаскиваются
+            const items = event.dataTransfer.items;
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (item.type.startsWith("image") || item.type.startsWith("video")) {
+                    return;
+                }
+            }
+
+            // Обработка вставки текста, если нужно
+            const text = event.dataTransfer.getData("text/plain");
+            document.execCommand("insertText", false, text);
+        }
+    });
+
+</script>
